@@ -1,11 +1,12 @@
 module Main exposing (Model, Msg(..), Stock, cartProductView, cartView, main, stockProductView, stockView, update, view)
 
-import Browser exposing (sandbox)
+import Browser exposing (sandbox, element)
 import Cart exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import List exposing (..)
+import Url 
 
 
 type alias Stock =
@@ -19,21 +20,25 @@ type alias Model =
 
 
 main =
-    Browser.sandbox
+    Browser.element
         { init = init
+        , subscriptions = subscriptions
         , view = view
         , update = update
         }
 
 
-init : Model
-init =
-    Model []
+init : () -> (Model, Cmd Msg)
+init _ =
+    (Model []
         [ Product "prod1" 100.5
         , Product "prod2" 15.36
         , Product "prod3" 21.15
-        ]
+        ], Cmd.none)
 
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
 
 {-| Messages - Add, remove, and change number of items in basket
 -}
@@ -45,17 +50,17 @@ type Msg
 
 {-| Update function to handle all updates - Add, Remove, or Decrement amount of product
 -}
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Add product ->
-            { model | cart = add model.cart product }
+            ({ model | cart = add model.cart product }, Cmd.none)
 
         Remove product ->
-            { model | cart = remove model.cart product }
+            ({ model | cart = remove model.cart product }, Cmd.none)
 
         Decrement product ->
-            { model | cart = decrement model.cart product }
+            ({ model | cart = decrement model.cart product }, Cmd.none)
 
 
 {-| View wrapper - Stock and cart
